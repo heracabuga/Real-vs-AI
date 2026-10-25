@@ -6,20 +6,25 @@ from typing import Any
 
 from flask import Flask, jsonify, render_template, request
 
+from backend.gemini_service import GeminiExplanationService
 from backend.image_validation import ImageValidationError, prepare_image
 from backend.model_service import ModelLoadError, ModelService
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
-MODEL_PATH = PROJECT_ROOT / "models" / "real_vs_ai_mobilenetv2_pipeline.pkl"
+MODEL_PATH = PROJECT_ROOT / "models" / "real_vs_ai_mobilenetv2_pipeline_v3.pkl"
 
 
-def create_app(model_service: ModelService | None = None) -> Flask:
+def create_app(
+    model_service: ModelService | None = None,
+    gemini_service: GeminiExplanationService | None = None,
+) -> Flask:
     app = Flask(__name__)
     app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024 + 1024
     service = model_service or ModelService(
         Path(os.environ.get("MODEL_PATH", str(MODEL_PATH)))
     )
+    gemini = gemini_service or GeminiExplanationService()
 
     @app.get("/")
     def index() -> str:
@@ -32,8 +37,9 @@ def create_app(model_service: ModelService | None = None) -> Flask:
             return _error("MISSING_IMAGE", "Please select an image.", 400)
 
         try:
-            image = prepare_image(upload.stream)
-            result = service.predict(image)
+            image_array, pil_image = prepare_image(upload.stream)
+            result = service.predict(image_array)
+            explanation = gemini.explain(pil_image, result)
         except ImageValidationError as error:
             return _error(error.code, error.message, error.status_code)
         except ModelLoadError as error:
@@ -51,7 +57,7 @@ def create_app(model_service: ModelService | None = None) -> Flask:
                 500,
             )
 
-        return jsonify({"success": True, **result})
+        return jsonify({"success": True, **result, "explanation": explanation})
 
     @app.errorhandler(413)
     def request_too_large(_: Exception) -> tuple[Any, int]:
