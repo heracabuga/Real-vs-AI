@@ -14,6 +14,28 @@ pip install -r requirements.txt
 flask --app app run --debug
 ```
 
+## Gemini Libraries
+
+```bash
+python -m pip install google-genai python-dotenv
+```
+
+Get API Key: https://aistudio.google.com/api-keys
+
+Create .env
+```
+GEMINI_API_KEY=ilagay_ang_actual_api_key_dito
+```
+
+Create .gitignore
+```
+venv/
+.env
+__pycache__/
+*.pyc
+backend/__pycache__/
+```
+
 Open <http://127.0.0.1:5000> and upload an image. 
 Uploads are validated, analyzed in memory, and are not stored by the application.
 
