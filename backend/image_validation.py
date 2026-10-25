@@ -21,8 +21,10 @@ class ImageValidationError(ValueError):
         self.status_code = status_code
 
 
-def prepare_image(file: BinaryIO, max_bytes: int = MAX_UPLOAD_BYTES) -> np.ndarray:
-    """Decode and normalize an upload into a model-ready RGB array."""
+def prepare_image(
+    file: BinaryIO, max_bytes: int = MAX_UPLOAD_BYTES
+) -> tuple[np.ndarray, Image.Image]:
+    """Decode and normalize an upload into a model-ready RGB array and PIL Image."""
     raw = file.read(max_bytes + 1)
     if len(raw) > max_bytes:
         raise ImageValidationError(
@@ -44,8 +46,8 @@ def prepare_image(file: BinaryIO, max_bytes: int = MAX_UPLOAD_BYTES) -> np.ndarr
                     415,
                 )
             normalized = ImageOps.exif_transpose(image).convert("RGB")
-            normalized = normalized.resize((224, 224), Image.Resampling.LANCZOS)
-            return np.asarray(normalized, dtype=np.float32)
+            resized = normalized.resize((224, 224), Image.Resampling.LANCZOS)
+            return np.asarray(resized, dtype=np.float32), normalized
     except ImageValidationError:
         raise
     except (UnidentifiedImageError, OSError) as error:
@@ -53,3 +55,4 @@ def prepare_image(file: BinaryIO, max_bytes: int = MAX_UPLOAD_BYTES) -> np.ndarr
             "INVALID_IMAGE",
             "The uploaded file is not a valid image.",
         ) from error
+        
