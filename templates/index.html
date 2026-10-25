@@ -13,9 +13,8 @@
         <header>
             <div class="title-row">
                 <h1>
-                    <span class="word-1">Real</span> 
-                    <span class="word-2">or</span> 
-                    <span class="word-3">AI?</span>
+                    <span class="word-1">Real or</span>
+                    <span class="word-2">AI?</span>
                 </h1>
             </div>
             <p class="subtitle">Upload a photo and our AI-powered analysis will tell you if it's real or AI generated. Fast. Accurate. Easy to use.</p>
@@ -27,7 +26,7 @@
                     <i class="fa-solid fa-image upload-icon"></i>
                     <h2 class="upload-title">Drag & drop an image here</h2>
                     <p class="upload-subtitle">or click to upload</p>
-                    <p class="upload-formats">Supports JPG, PNG, WEBP (Max 10MB)</p>
+                    <p class="upload-formats">Supports JPG, PNG, & WEBP (Max 10MB)</p>
                     
                     <input type="file" id="image-input" name="image" accept="image/jpeg, image/png, image/webp" hidden>
                     
@@ -40,8 +39,9 @@
             <div class="results-section">
                 <div class="results-empty" id="results-placeholder">
                     <i class="fa-regular fa-image"></i>
-                    <h3>No image analyzed yet</h3>
-                    <p>Upload an image to see the results.</p>
+                    <img class="result-image" id="result-image" alt="Uploaded image preview" hidden>
+                    <h3 hidden>No image analyzed yet</h3>
+                    <p hidden>Upload an image to see the results.</p>
                 </div>
                 
                 <ul class="metrics-list">
@@ -63,6 +63,20 @@
                 </ul>
             </div>
         </main>
+
+        <section class="explanation-box">
+            <div class="explanation-icon-wrapper">
+                <i class="fa-regular fa-lightbulb"></i>
+            </div>
+            <div class="explanation-body">
+                <div class="explanation-top-row">
+                    <h3 class="explanation-title">Why this result?</h3>
+                </div>
+                <p class="explanation-text" id="explanation-text">
+                    Upload an image above to see an AI-powered explanation of why it was classified as Real or AI generated.
+                </p>
+            </div>
+        </section>
 
         <section class="features">
             <div class="feature-item">
